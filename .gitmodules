@@ -1,0 +1,3 @@
+[submodule "libalgo"]
+	path = libalgo
+	url = https://github.com/cascadekit/libalgo.git

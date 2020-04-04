@@ -1,0 +1,40 @@
+@use "sass:meta";
+@use "sass:map";
+@use "../libalgo/lib" as lib;
+
+@mixin generate_map($map) {
+    @each $rule, $value in $map {
+        @if meta.type_of($value) == "function" {
+            #{$rule}: meta.call($value);
+        } @else if lib.is_bound_function($value) {
+            #{$rule}: lib.call($value);
+        }
+        @else {
+            #{$rule}: $value;
+        }
+    }
+}
+
+@mixin _generate_list($elements) {
+    @each $element in $elements {
+        @if meta.type_of($element) == "map" {
+            @include generate_map($element);
+        } @else if meta.type_of($element) == "list" {
+            @include generate_tree($element...);
+        } @else {
+            @warn "unrecognized input " + $element;
+        }
+    }
+}
+
+@mixin generate_tree($tree...) {
+    $first: lib.list_first($tree);
+    @if meta.type_of($first) == "string" {
+        $rest: lib.list_tail($tree);
+        #{$first} {
+            @include _generate_list($rest);
+        }
+    } @else {
+        @include _generate_list($tree);
+    }
+}
