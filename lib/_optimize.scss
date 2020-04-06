@@ -1,0 +1,13 @@
+@use "generate";
+@use "../libalgo/lib";
+@use "sass:map";
+@use "sass:meta";
+
+// combines top level rules in a block
+@function combine_rules($tree) {
+    $is_rule: meta.get_function("is_rule", false, generate);
+    $rules: lib.filter($is_rule, $tree);
+    $rest: lib.remove_if($is_rule, $tree);
+    $rules: lib.reduce(meta.get_function("merge", false, map), (), $rules);
+    @return generate.insert_rules($rest, $rules);
+}

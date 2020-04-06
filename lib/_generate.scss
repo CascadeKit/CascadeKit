@@ -1,6 +1,7 @@
 @use "sass:meta";
 @use "sass:map";
-@use "../libalgo/lib" as lib;
+@use "sass:list";
+@use "../libalgo/lib";
 
 @mixin generate_map($map) {
     @each $rule, $value in $map {
@@ -37,4 +38,48 @@
     } @else {
         @include _generate_list($tree);
     }
+}
+
+@function create_block($selector) {
+    @return ($selector, );
+}
+
+@function insert_rules($block, $rules) {
+    @if not is_block($block) {
+        @error $block + " is not a valid block";
+    }
+
+    @if not is_rule($rules) {
+        @error $rules + " is not a set of rules";
+    }
+
+    @return list.append($block, $rules);
+}
+
+@function insert_block($block, $new) {
+    @if not is_block($block) {
+        @error $block + " is not a valid block";
+    }
+
+    @if not is_block($new) {
+        @error $new + " is not a valid block";
+    }
+
+    @return list.append($block, $new);
+}
+
+@function is_block($tree) {
+    @return meta.type_of(lib.list_first($tree)) == "string";
+}
+
+@function is_rule($rule) {
+    @return lib.is_map($rule);
+}
+
+@function has_rules($list) {
+    @return lib.any(is_rule, $list);
+}
+
+@function has_inner_block($list) {
+    @return lib.any(is_block, $list);
 }

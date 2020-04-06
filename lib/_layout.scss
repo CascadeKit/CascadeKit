@@ -1,0 +1,15 @@
+@use "../libalgo/lib";
+@use "sass:list";
+
+@function flex_columns($name, $col_sizes, $gap_sizes) {
+    @if list.length($gap_sizes) != list.length($col_sizes) + 2 or list.length($gap_sizes) != list.length($col_sizes) - 1 {
+        @error "number of gaps specified must be one less or two greater than columns";
+    }
+
+    $tree: lib.create_block($name);
+    $tree: lib.insert_rules($tree, (
+        "display": flex
+    ));
+
+    @return $tree;
+}

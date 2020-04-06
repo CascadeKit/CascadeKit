@@ -1,14 +1,13 @@
-@use "../lib/mixins.scss";
+@use "../lib";
 
 @at-root {
     .test {
-        @include mixins.generate_map((
-            "selector": ".class",
+        @include lib.generate_tree((
             "background-color": black
         ));
     }
 
-    @include mixins.generate_tree(
+    @include lib.generate_tree(
         (
             ".class-2",
             (
@@ -18,19 +17,36 @@
         (
             ".class-3",
             (
-                "selector": ".class-3",
                 "text-align": center
             )
         )
     );
 
-    @include mixins.generate_tree(
+    @include lib.generate_tree(
         ".outer",
         (
-            ".inner",
+            "> .inner",
             (
                 "background-color": black
             )
         )
     );
+
+    $tree: lib.create_block("one");
+    $tree: lib.insert_rules($tree, (
+        "display": flex
+    ));
+    $tree: lib.insert_block($tree, lib.insert_rules(lib.create_block("two"),
+    (
+        "flex": 1
+    )));
+    $tree: lib.insert_rules($tree, (
+        "justify-content": flex-start
+    ));
+    $tree: lib.insert_rules($tree, (
+        "justify-content": flex-end
+    ));
+    $tree: lib.combine_rules($tree);
+
+    @include lib.generate_tree($tree);
 }
