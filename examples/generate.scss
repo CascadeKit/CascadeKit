@@ -32,6 +32,11 @@
         )
     );
 
+    $breakpoints: (560px);
+    $vals: (10px, 12px);
+
+    @include lib.generate_tree(lib.responsive_text($breakpoints, $vals));
+
     $tree: lib.create_block("one");
     $tree: lib.insert_rules($tree, (
         "display": flex

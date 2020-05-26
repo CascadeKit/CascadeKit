@@ -1,6 +1,7 @@
 @use "sass:meta";
 @use "sass:map";
 @use "sass:list";
+@use "sass:string";
 @use "../libalgo/lib";
 
 @mixin generate_map($map) {
@@ -29,12 +30,19 @@
 }
 
 @mixin generate_tree($tree...) {
-    $first: lib.list_first($tree);
+    $first: lib.first($tree);
     @if meta.type_of($first) == "string" {
-        $rest: lib.list_tail($tree);
-        #{$first} {
-            @include _generate_list($rest);
+        $rest: lib.tail($tree);
+        @if string.index($first, "@media") {
+            @media #{string.slice($first, 7)} {
+                @include _generate_list($rest);
+            }
+        } @else {
+            #{$first} {
+                @include _generate_list($rest);
+            }
         }
+        
     } @else {
         @include _generate_list($tree);
     }
@@ -69,7 +77,7 @@
 }
 
 @function is_block($tree) {
-    @return meta.type_of(lib.list_first($tree)) == "string";
+    @return meta.type_of(lib.first($tree)) == "string";
 }
 
 @function is_rule($rule) {

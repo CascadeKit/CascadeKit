@@ -1,0 +1,32 @@
+@use "generate";
+@use "sass:list";
+@use "../libalgo/lib";
+
+//                     breakpoints[0]
+// $segment_values[0]        |        $segment_values[1]
+@function responsive_text($breakpoints, $segment_values) {
+    @if list.length($segment_values) != list.length($breakpoints) + 1 {
+        @error "segment values must have one more element than breakpoints";
+    }
+
+    $root: generate.create_block("html");
+    $root: generate.insert_rules($root, (
+        font-size: lib.first($segment_values)
+    ));
+
+    @for $i from 0 to list.length($breakpoints) - 1 {
+        $block: generate.create_block("@media (#{list.nth($breakpoints, $i)}<= width < #{list.nth($breakpoints, $i + 1)})");
+        $block: generate.insert_rules($block, (
+            font-size: list.nth($segment_values, $i + 1)
+        ));
+        $root: generate.insert_block($root, $block);
+    }
+
+    $block: generate.create_block("@media (width > #{lib.last($breakpoints)})");
+    $block: generate.insert_rules($block, (
+        font-size: lib.last($segment_values)
+    ));
+    $root: generate.insert_block($root, $block);
+
+    @return $root;
+}
